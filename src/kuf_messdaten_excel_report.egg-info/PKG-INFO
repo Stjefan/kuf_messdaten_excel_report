@@ -1,0 +1,8 @@
+Metadata-Version: 2.1
+Name: kuf-messdaten-excel-report
+Version: 0.0.1
+Summary: Dauerauswertung via python
+Author-email: Stefan Scheible <stefan.scheible@kurz-fischer.com>
+License: BSD-3-Clause
+Keywords: one,two
+Requires-Python: >=3.7

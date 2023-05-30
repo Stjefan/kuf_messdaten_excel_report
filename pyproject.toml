@@ -18,7 +18,7 @@ classifiers = [
 dependencies = [
     "pandas",
     "psycopg2",
-    "dotenv",
+    "python-dotenv",
     "sqlalchemy",
     "xlsxwriter"
 ]
