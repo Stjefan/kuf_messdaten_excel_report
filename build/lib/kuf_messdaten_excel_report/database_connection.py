@@ -48,6 +48,11 @@ class ExcelReportDbService:
         )
         self.db_connection = self.alchemyEngine.connect()
 
+    def __del__(self):
+        print('Destructor called, Employee deleted.')
+        self.db_connection.close()
+
+
     def get_wochenbericht_1(self, projekt_id: UUID, from_date: datetime, to_date: datetime, immissionsort_id = UUID("c4862493478b49ecba03a779551bf575")):
         columns = ["time", "pegel", "laermursache_id", "immissionsort_id", "u1.name"]
         
@@ -78,6 +83,21 @@ class ExcelReportDbService:
         print(df)
 
         return df
+    
+    def get_wochenuebersicht_vorhandene_messdaten(self, from_date: datetime, to_date: datetime, messpunkt_id: UUID):
+        results = {}
+        for t in ["terz", "richtungswertungsvantek", "resu"]:
+            q_1_a = f"""select time_bucket('24 hours', time) AS time_group, count(*)
+                from dauerauswertung_{t} WHERE messpunkt_id = '{messpunkt_id}'::uuid AND time > '{from_date}' AND time < '{to_date}' GROUP BY time_group;"""
+            print(q_1_a)
+            df = pd.read_sql(q_1_a, self.db_connection)
+            results[t] = df
+            # df['time'] = df['time'].dt.tz_convert('Europe/Berlin')
+            # df['time'] = df['time'].dt.tz_localize(None)
+
+            print(df)
+
+        return results
 
     def get_maxpegel_1(self, projekt_id: UUID, from_date: datetime, to_date: datetime, messpunkt_id: UUID):
         columns = ["time", "pegel AS maxpegel", "messpunkt_id"]

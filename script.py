@@ -23,6 +23,13 @@ from src.kuf_messdaten_excel_report.database_connection import (
     ImmissionsortHelper,
 )
 
+import os, logging
+import locale
+from src.kuf_messdaten_excel_report.html_tables import create_html_table, fun_with_styling
+from src.kuf_messdaten_excel_report.png_charts import create_png_charts
+
+locale.setlocale(locale.LC_TIME, 'de_DE')
+
 load_dotenv("C:\Repos\kuf_packages\.env")
 
 print("ENV:", os.getenv("POSTGRES_CS"))
@@ -90,7 +97,7 @@ def create_monatsbericht_immendingen(year: int, month: int):
             max_pegel_nacht=max_pegel_nacht,
         )
         my_set[io.name] = io
-
+    
     u = UebersichtMonat("Immendingen", n2, n3, n1, my_set)
 
 
@@ -159,16 +166,24 @@ def create_monatsbericht_mannheim(year: int, month: int):
 
 
 
+
+
+
+
 if __name__ == "__main__":
-    if True:
+
+    if False:
         mp_1 = (UUID("16b2a784-8b6b-4b7e-9abf-fd2d5a8a0091"), "mp1")
         mp_3 = (UUID("d0aa76cf-36e8-43d1-bb62-ff9cc2c275c0"), "mp3")
         mp_4 = (UUID("ab4e7e2d-8c39-48c2-b80c-b80f6b619657"), "mp4")
         mp_2 = (UUID("965157eb-ab17-496f-879a-55ce924f6252"), "mp2")
 
-        for mp in [mp_1, mp_2]:
+        for mp in [
+            mp_1, mp_2, mp_3, 
+            mp_4]:
             m = ExcelReportDbService(CS)
-            m.get_fremdgeraeuschpegel(datetime(2023, 5, 15, 7, 0, 0), datetime(2023, 5, 15, 20, 0,0), mp[0])
+            # m.get_fremdgeraeuschpegel(datetime(2023, 4, 1, 0, 0, 0), datetime(2023, 4, 30, 23, 59,59), mp[0])
+            m.get_wochenuebersicht_vorhandene_messdaten(datetime(2023, 5, 1, 0, 0, 0), datetime(2023, 5, 1, 20, 0,0), mp[0])
     day_in_week = datetime(2023, 5, 7)
     if False:
         
@@ -207,11 +222,14 @@ if __name__ == "__main__":
                 id, name = mp
                 r = m.get_maxpegel_1(None, from_date , to_date, id)
                 r = r.set_index("time")
+
+                u1 = m.get_umgebungslaerm_1(None, from_date, to_date, id)
                 lr_r = ios_dict[name]
                 dti = pd.date_range(from_date, end=to_date, freq='5s')
                 dti.name = "time"
                 result = pd.DataFrame(index=dti, columns=["maxpegel", "lr"])
-                # print(result)
+                print(result, u1)
+
                 
                 result.loc[r.index, "maxpegel"] = r["maxpegel"]
                 result.loc[lr_r.index, "lr"] = lr_r["pegel"]
@@ -226,8 +244,8 @@ if __name__ == "__main__":
                 f.write(bytesio_obj.getbuffer())
                 print("Writing succes")
     if False:
-        create_monatsbericht_mannheim(2023, 4)
-        create_monatsbericht_immendingen(2023, 4)
+        create_monatsbericht_mannheim(2023, 6)
+        # create_monatsbericht_immendingen(2023, 4)
     if False:
         bytesio_obj = BytesIO()
         df_1 = pd.DataFrame(
@@ -285,3 +303,19 @@ if __name__ == "__main__":
             index=pd.date_range(first, last, freq="d"),
         )
         print(df_1)
+
+    mp_name_id_list = [("MP1", UUID("16b2a784-8b6b-4b7e-9abf-fd2d5a8a0091")),
+                    ("MP2", UUID("965157eb-ab17-496f-879a-55ce924f6252")),
+                    ("MP3", UUID("d0aa76cf-36e8-43d1-bb62-ff9cc2c275c0")),
+                    ("MP4", UUID("ab4e7e2d-8c39-48c2-b80c-b80f6b619657"))
+                    ]
+    if True:
+        # fun_with_styling()
+        create_html_table(datetime(2023, 6, 27))
+
+
+    if True:
+
+        create_png_charts(datetime(2023, 6, 27), mp_name_id_list)
+        
+

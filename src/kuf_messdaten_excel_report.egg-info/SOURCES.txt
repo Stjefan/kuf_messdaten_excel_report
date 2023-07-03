@@ -1,5 +1,6 @@
 .gitignore
 pyproject.toml
+readme.md
 script.py
 src/kuf_messdaten_excel_report/__init__.py
 src/kuf_messdaten_excel_report/database_connection.py

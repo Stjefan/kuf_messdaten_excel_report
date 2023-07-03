@@ -7,6 +7,8 @@ from datetime import datetime
 import pandas as pd
 
 from uuid import UUID
+from dotenv import load_dotenv
+import os
 
 from dataclasses import dataclass
 
@@ -23,7 +25,7 @@ class ImmissionsortHelper:
 @dataclass
 class ExcelReportDbService:
     dbname: ClassVar[str] = "dauerauswertung"
-    conn_string: str
+    conn_string: str = None
     alchemyEngine: Engine = None
     
     # q_filtered = f"""SELECT count(*) FROM tsdb_rejected rej JOIN tsdb_messpunkt m ON rej.messpunkt_id = m.id WHERE time >= '{after_time}' AND time <= '{before_time}' AND m.projekt_id = {projekt_id}"""
@@ -42,11 +44,21 @@ class ExcelReportDbService:
     
     def __post_init__(self):
         # Connect to PostgreSQL server
+        if self.conn_string is None:
+            load_dotenv("C:\Repos\kuf_packages\.env")
+
+            print("ENV:", os.getenv("POSTGRES_CS"))
+            self.conn_string = os.getenv("POSTGRES_CS")
         self.alchemyEngine = create_engine(
         self.conn_string
         # 'postgresql://postgres:password@127.0.0.1:5432/tsdb'
         )
         self.db_connection = self.alchemyEngine.connect()
+
+    def __del__(self):
+        print('Destructor called')
+        self.db_connection.close()
+
 
     def get_wochenbericht_1(self, projekt_id: UUID, from_date: datetime, to_date: datetime, immissionsort_id = UUID("c4862493478b49ecba03a779551bf575")):
         columns = ["time", "pegel", "laermursache_id", "immissionsort_id", "u1.name"]
@@ -78,6 +90,21 @@ class ExcelReportDbService:
         print(df)
 
         return df
+    
+    def get_wochenuebersicht_vorhandene_messdaten(self, from_date: datetime, to_date: datetime, messpunkt_id: UUID):
+        results = {}
+        for t in ["terz", "richtungswertungsvantek", "resu"]:
+            q_1_a = f"""select time_bucket('24 hours', time) AS time_group, count(*)
+                from dauerauswertung_{t} WHERE messpunkt_id = '{messpunkt_id}'::uuid AND time > '{from_date}' AND time < '{to_date}' GROUP BY time_group;"""
+            print(q_1_a)
+            df = pd.read_sql(q_1_a, self.db_connection)
+            results[t] = df
+            # df['time'] = df['time'].dt.tz_convert('Europe/Berlin')
+            # df['time'] = df['time'].dt.tz_localize(None)
+
+            print(df)
+
+        return results
 
     def get_maxpegel_1(self, projekt_id: UUID, from_date: datetime, to_date: datetime, messpunkt_id: UUID):
         columns = ["time", "pegel AS maxpegel", "messpunkt_id"]
@@ -96,6 +123,22 @@ class ExcelReportDbService:
         print(df)
 
         return df
+    
+    def get_umgebungslaerm_1(self, projekt_id: UUID, from_date: datetime, to_date: datetime, messpunkt_id: UUID):
+        columns = ["time", "pegel AS umgebungspegel", "messpunkt_id"]
+        
+        q_1_a = f"""select {','.join(columns)} 
+            from dauerauswertung_baustellenumgebungspegel
+            WHERE time > '{from_date}' AND time < '{to_date}' and messpunkt_id = '{messpunkt_id}'::uuid
+            ORDER BY time;"""
+        # rs = self.db_connection.execute(text(q_1_a))
+        print(q_1_a)
+        df = pd.read_sql(q_1_a, self.db_connection)
+        print(df)
+        df['time'] = df['time'].dt.tz_convert('Europe/Berlin')
+        df['time'] = df['time'].dt.tz_localize(None)
+        df = df.dropna()
+        print(df)
     
     def get_number_verwertbare_sekunden(self, projekt_id: UUID, from_date: datetime, to_date: datetime):
         query_verfuegbare_sekunden = f"""SELECT sum(verhandene_messwerte) FROM {self.dbname}_auswertungslauf WHERE zeitpunkt_im_beurteilungszeitraum >= '{from_date}' AND zeitpunkt_im_beurteilungszeitraum <= '{to_date}' AND zuordnung_id = '{projekt_id}'::uuid;"""
