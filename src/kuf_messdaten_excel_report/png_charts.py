@@ -254,18 +254,18 @@ def get_plotly_baulaerm_weekly_charts(cursor, parsed_date, mp_name, mp_id, folde
         bytes_io.seek(0)
         return bytes_io
 
-def create_png_charts(day_in_week: datetime, i):
+def create_png_charts(day_in_week: datetime, name_id, c):
     # day_in_week =  datetime(2023, 6, 5)
     from_datetime, to_datetime = get_start_end_week(day_in_week)
 
-    m = ExcelReportDbService()
+
     result_list = []
-    with m.db_connection.connection.cursor() as c:
-        name, id = i
-        for d in range(0, 6+1):
-            try:
-                bytes_io = get_plotly_baulaerm_weekly_charts(c, from_datetime + timedelta(days=d), name, id, f"./images/{name}/")
-                result_list.append((from_datetime + timedelta(days=d), name, bytes_io))
-            except Exception as ex:
-                logging.exception(ex)
+
+    name, id = name_id
+    for d in range(0, 6+1):
+        try:
+            bytes_io = get_plotly_baulaerm_weekly_charts(c, from_datetime + timedelta(days=d), name, id, f"./images/{name}/")
+            result_list.append((from_datetime + timedelta(days=d), name, bytes_io))
+        except Exception as ex:
+            logging.exception(ex)
     return result_list

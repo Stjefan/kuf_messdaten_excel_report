@@ -310,10 +310,13 @@ if __name__ == "__main__":
                     ("MP4", UUID("ab4e7e2d-8c39-48c2-b80c-b80f6b619657"))
                     ]
     destination = "./tables/"
-    if False:
+    if True:
+        m = ExcelReportDbService()
+        c = m.db_connection.connection.cursor()
+        
         for mp in mp_name_id_list:
             from_datetime = datetime(2023, 6, 27)
-            string_io = create_html_table(from_datetime, mp)
+            string_io = create_html_table(from_datetime, mp,c)
             name = mp[0]
             with open(os.path.join(destination, f'{from_datetime.strftime("%Y_Lr_Woche_%V")}_{name}.html'), "w") as f:
                 f.write(string_io.getvalue())
@@ -324,9 +327,12 @@ if __name__ == "__main__":
     if True:
         from_datetime = datetime(2023, 6, 27)
         destination = "./images/"
+        m = ExcelReportDbService()
+        c = m.db_connection.connection.cursor()
+        
         for mp in mp_name_id_list:
             name = mp[0]
-            results = create_png_charts(datetime(2023, 6, 27), mp)
+            results = create_png_charts(datetime(2023, 6, 27), mp, c)
             for b in results:
                 curr_io: BytesIO = b[2]
                 with open(os.path.join(destination, f"lr_{b[0].strftime('%Y_%m_%d')}_{b[1]}.png"), "wb") as f:

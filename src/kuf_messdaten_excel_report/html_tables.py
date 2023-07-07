@@ -102,11 +102,9 @@ def get_tabelle_baulaerm(cursor, start: datetime, end: datetime, mp_name, mp_id)
     return pd.merge(left=results["baustellenbeurteilungspegel"], right=results["baustellenbeurteilungspegelumgebung"], left_index=True, right_index=True)
 
 
-def create_html_table(day_in_week: datetime, mp_name_id) -> StringIO:
+def create_html_table(day_in_week: datetime, mp_name_id, c) -> StringIO:
 
-    m = ExcelReportDbService()
-    c = m.db_connection.connection.cursor()
-        
+
     
     from_datetime, to_datetime = get_start_end_week(day_in_week)
 
