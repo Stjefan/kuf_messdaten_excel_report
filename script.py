@@ -309,13 +309,28 @@ if __name__ == "__main__":
                     ("MP3", UUID("d0aa76cf-36e8-43d1-bb62-ff9cc2c275c0")),
                     ("MP4", UUID("ab4e7e2d-8c39-48c2-b80c-b80f6b619657"))
                     ]
-    if True:
-        # fun_with_styling()
-        create_html_table(datetime(2023, 6, 27))
+    destination = "./tables/"
+    if False:
+        for mp in mp_name_id_list:
+            from_datetime = datetime(2023, 6, 27)
+            string_io = create_html_table(from_datetime, mp)
+            name = mp[0]
+            with open(os.path.join(destination, f'{from_datetime.strftime("%Y_Lr_Woche_%V")}_{name}.html'), "w") as f:
+                f.write(string_io.getvalue())
+                print("Writing succes")
+    
 
 
     if True:
-
-        create_png_charts(datetime(2023, 6, 27), mp_name_id_list)
+        from_datetime = datetime(2023, 6, 27)
+        destination = "./images/"
+        for mp in mp_name_id_list:
+            name = mp[0]
+            results = create_png_charts(datetime(2023, 6, 27), mp)
+            for b in results:
+                curr_io: BytesIO = b[2]
+                with open(os.path.join(destination, f"lr_{b[0].strftime('%Y_%m_%d')}_{b[1]}.png"), "wb") as f:
+                    f.write(curr_io.getvalue())
+                    print("Writing succes")
         
 

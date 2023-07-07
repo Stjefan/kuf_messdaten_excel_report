@@ -1,4 +1,5 @@
 from datetime import datetime, date, timedelta
+from io import BytesIO
 from .utils import get_start_end_week, est, DATE_FORMAT
 from uuid import UUID
 from .database_connection import ExcelReportDbService
@@ -246,25 +247,25 @@ def get_plotly_baulaerm_weekly_charts(cursor, parsed_date, mp_name, mp_id, folde
         
         # figure = go.Figure(data=traces, layout=layout)
         # fig.show()
-        fig.write_image(os.path.join(folder_name, f"lr_{parsed_date.strftime('%Y_%m_%d')}_{mp_name}.png"))
+        bytes_io = BytesIO()
+        fig.write_image(bytes_io
+            #os.path.join(folder_name, f"lr_{parsed_date.strftime('%Y_%m_%d')}_{mp_name}.png")
+            )
+        bytes_io.seek(0)
+        return bytes_io
 
-def create_png_charts(day_in_week: datetime, name_id_list: list):
+def create_png_charts(day_in_week: datetime, i):
     # day_in_week =  datetime(2023, 6, 5)
     from_datetime, to_datetime = get_start_end_week(day_in_week)
 
     m = ExcelReportDbService()
-
+    result_list = []
     with m.db_connection.connection.cursor() as c:
-        for i in name_id_list:
-        # [
-        # ("MP1", UUID("16b2a784-8b6b-4b7e-9abf-fd2d5a8a0091")),
-        #             ("MP2", UUID("965157eb-ab17-496f-879a-55ce924f6252")),
-        #             ("MP3", UUID("d0aa76cf-36e8-43d1-bb62-ff9cc2c275c0")),
-        #             ("MP4", UUID("ab4e7e2d-8c39-48c2-b80c-b80f6b619657"))
-        #             ]:
-            name, id = i
-            for d in range(0, 6+1):
-                try:
-                    get_plotly_baulaerm_weekly_charts(c, from_datetime + timedelta(days=d), name, id, f"./images/{name}/")
-                except Exception as ex:
-                    logging.exception(ex)
+        name, id = i
+        for d in range(0, 6+1):
+            try:
+                bytes_io = get_plotly_baulaerm_weekly_charts(c, from_datetime + timedelta(days=d), name, id, f"./images/{name}/")
+                result_list.append((from_datetime + timedelta(days=d), name, bytes_io))
+            except Exception as ex:
+                logging.exception(ex)
+    return result_list

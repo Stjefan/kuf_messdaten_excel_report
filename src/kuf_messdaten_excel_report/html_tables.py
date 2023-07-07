@@ -1,3 +1,4 @@
+from io import BytesIO, StringIO
 import os
 from calendar import monthrange
 from uuid import UUID
@@ -101,33 +102,44 @@ def get_tabelle_baulaerm(cursor, start: datetime, end: datetime, mp_name, mp_id)
     return pd.merge(left=results["baustellenbeurteilungspegel"], right=results["baustellenbeurteilungspegelumgebung"], left_index=True, right_index=True)
 
 
-def create_html_table(day_in_week: datetime):
+def create_html_table(day_in_week: datetime, mp_name_id) -> StringIO:
 
     m = ExcelReportDbService()
     c = m.db_connection.connection.cursor()
         
     
+    from_datetime, to_datetime = get_start_end_week(day_in_week)
+
+    name, id = mp_name_id
+    bytesio_obj = StringIO()
+    df = get_tabelle_baulaerm(c, from_datetime, to_datetime + timedelta(days=1), name, id)
+    print(df)
+    multi_index = pd.MultiIndex.from_product([["Tagzeitraum", "Nachtzeitraum"], ["Lr<sub>Baustelle</sub>(A)", "HG"]])
     
-    if False:
-        first_of_month = datetime(day_in_week.year, day_in_week.month, 1)
-        _, days_in_month = monthrange(first_of_month.year, first_of_month.month)
-        last_of_month = first_of_month + timedelta(days=7)
-    else:
-        from_datetime, to_datetime = get_start_end_week(day_in_week)
-    for mp in [("MP1", UUID("16b2a784-8b6b-4b7e-9abf-fd2d5a8a0091")), 
-                ("MP2", UUID("965157eb-ab17-496f-879a-55ce924f6252")),
-                ("MP3", UUID("d0aa76cf-36e8-43d1-bb62-ff9cc2c275c0")),
-                ("MP4", UUID("ab4e7e2d-8c39-48c2-b80c-b80f6b619657"))
-                ]:
-        name, id = mp
-        df = get_tabelle_baulaerm(c, from_datetime, to_datetime + timedelta(days=1), name, id)
-        df = df.rename(columns={
-            "lr_baustellenbeurteilungspegel": "Beurteilungspegel Baustelle L<sub>r, tag</sub>(A)",
-            "lr_baustellenbeurteilungspegelumgebung": "Beurteilungspegel Fremdgeräusch, L<sub>r, HG</sub>(A)"
-        })
-        styler = df.style.set_caption(name)
-        df = styler.pipe(make_pretty)
-        
-        df.to_html(
-            os.path.join(destination, f'{from_datetime.strftime("%Y_Lr_Woche_%V")}_{name}.html'),
-            escape=False)
+    df["a"] = None
+    df["b"] = None
+    
+    print(df)
+    r = pd.DataFrame(df.values, columns=multi_index, index=df.index)
+    # df = df.rename(columns={
+    #     "lr_baustellenbeurteilungspegel": "Beurteilungspegel Baustelle L<sub>r, tag</sub>(A)",
+    #     "lr_baustellenbeurteilungspegelumgebung": "Beurteilungspegel Fremdgeräusch, L<sub>r, HG</sub>(A)"
+    # })
+    s = r.style.format(precision=1, thousands=".", decimal=",", na_rep="-")
+    s.format_index(lambda v: v.strftime("%A, den %d.%m.%Y"))
+    s1 = s.set_table_styles([
+        {'selector': 'th.col_heading', 'props': 'text-align: center;'},
+        {'selector': 'th.col_heading.level0', 'props': 'font-size: 1.5em;'},
+        {'selector': 'td', 'props': 'text-align: center;'},
+    ], overwrite=False)
+    s1.set_caption(name)
+    # styler = df.style.set_caption(name)
+    # df = styler.pipe(make_pretty)
+    
+    s1.to_html(
+            bytesio_obj,
+        # os.path.join(destination, f'{from_datetime.strftime("%Y_Lr_Woche_%V")}_{name}.html'),
+        escape=False)
+    
+    bytesio_obj.seek(0)
+    return bytesio_obj
