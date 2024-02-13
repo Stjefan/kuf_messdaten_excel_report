@@ -171,7 +171,7 @@ def create_monatsbericht_mannheim(year: int, month: int):
 
 
 if __name__ == "__main__":
-
+    print("Hello from script")
     if False:
         mp_1 = (UUID("16b2a784-8b6b-4b7e-9abf-fd2d5a8a0091"), "mp1")
         mp_3 = (UUID("d0aa76cf-36e8-43d1-bb62-ff9cc2c275c0"), "mp3")
@@ -310,7 +310,7 @@ if __name__ == "__main__":
                     ("MP4", UUID("ab4e7e2d-8c39-48c2-b80c-b80f6b619657"))
                     ]
     destination = "./tables/"
-    if True:
+    if False:
         m = ExcelReportDbService()
         c = m.db_connection.connection.cursor()
         
@@ -324,7 +324,7 @@ if __name__ == "__main__":
     
 
 
-    if True:
+    if False:
         from_datetime = datetime(2023, 6, 27)
         destination = "./images/"
         m = ExcelReportDbService()

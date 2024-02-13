@@ -13,7 +13,6 @@ from io import BytesIO
 import importlib.resources
 from .excel_helper import ExcelWorksheet, ExcelCell
 
-print(__package__)
 rel_kufi_fußzeile_thumbnail = "resources/kufi_fußzeile_thumbnail.jpg"
 rel_kufi_logo_thumbnail = "resources/kf_logo_thumbnail.jpg"
 kufi_fußzeile_thumbnail = importlib.resources.files(__package__).joinpath(rel_kufi_fußzeile_thumbnail)

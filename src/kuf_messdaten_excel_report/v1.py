@@ -17,7 +17,6 @@ import os
 
 load_dotenv("C:\Repos\kuf_packages\.env")
 
-print("ENV:", os.getenv("POSTGRES_CS"))
 CS = os.getenv("POSTGRES_CS")
 
 

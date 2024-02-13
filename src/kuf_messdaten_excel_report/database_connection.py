@@ -45,7 +45,7 @@ class ExcelReportDbService:
     def __post_init__(self):
         # Connect to PostgreSQL server
         if self.conn_string is None:
-            load_dotenv("C:\Repos\kuf_packages\.env")
+            load_dotenv("@/.env")
 
             print("ENV:", os.getenv("POSTGRES_CS"))
             self.conn_string = os.getenv("POSTGRES_CS")
