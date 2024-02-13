@@ -57,7 +57,7 @@ class ExcelReportDbService:
 
     def __del__(self):
         print('Destructor called')
-        self.db_connection.close()
+        # self.db_connection.close()
 
 
     def get_wochenbericht_1(self, projekt_id: UUID, from_date: datetime, to_date: datetime, immissionsort_id = UUID("c4862493478b49ecba03a779551bf575")):

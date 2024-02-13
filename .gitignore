@@ -3,3 +3,4 @@
 images/
 tables/
 *.env
+tests/artifacts/

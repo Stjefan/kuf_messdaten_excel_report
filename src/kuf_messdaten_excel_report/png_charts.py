@@ -74,7 +74,7 @@ def get_plotly_baulaerm_auswertung_an_messpunkt(parsed_date, mp_name, mp_id, fol
             cursor.execute(q)
 
             
-            print(q)
+            logging.info(q)
             result_dict = cursor.fetchall()
             df = pd.DataFrame(result_dict, columns=columns)
             df["time"] = df["time"].dt.tz_convert("Europe/Berlin")
