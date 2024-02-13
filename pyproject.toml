@@ -7,7 +7,7 @@ name = "kuf-messdaten-excel-report"
 authors = [
     {name = "Stefan Scheible", email = "stefan.scheible@kurz-fischer.com"},
 ]
-version = "0.0.5"  # Required
+version = "0.0.6"  # Required
 description = "Dauerauswertung via python"
 
 requires-python = ">=3.9"
@@ -17,7 +17,7 @@ classifiers = [
 ]
 dependencies = [
     "pandas",
-    "psycopg2",
+    "psycopg2-binary",
     "python-dotenv",
     "sqlalchemy",
     "xlsxwriter"
