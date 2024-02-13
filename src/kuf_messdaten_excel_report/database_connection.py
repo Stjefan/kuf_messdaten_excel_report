@@ -45,10 +45,10 @@ class ExcelReportDbService:
     def __post_init__(self):
         # Connect to PostgreSQL server
         if self.conn_string is None:
-            load_dotenv("@/.env")
+            load_dotenv()
 
-            print("ENV:", os.getenv("POSTGRES_CS"))
-            self.conn_string = os.getenv("POSTGRES_CS")
+
+            self.conn_string = os.getenv("CS_POSTGRES")
         self.alchemyEngine = create_engine(
         self.conn_string
         # 'postgresql://postgres:password@127.0.0.1:5432/tsdb'

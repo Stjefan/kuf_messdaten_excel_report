@@ -19,7 +19,7 @@ load_dotenv()
 
 from .monatsbericht import UebersichtImmissionsort, UebersichtMonat, erstelle_xslx_monatsbericht
 
-CS = os.getenv("POSTGRES_CS")
+CS = os.getenv("CS_POSTGRES")
 
 
 locale.setlocale(locale.LC_TIME, 'de_DE')

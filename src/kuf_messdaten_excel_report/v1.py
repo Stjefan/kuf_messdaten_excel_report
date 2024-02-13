@@ -15,9 +15,7 @@ from datetime import datetime
 from dotenv import load_dotenv
 import os
 
-load_dotenv("C:\Repos\kuf_packages\.env")
 
-CS = os.getenv("POSTGRES_CS")
 
 
 @dataclass
@@ -66,6 +64,3 @@ class DbService:
         return df
 
 
-if __name__ == "__main__":
-    m = DbService(CS)
-    print(m.get_beurteilungspegel("c4862493-478b-49ec-ba03-a779551bf575", datetime(2023, 4, 13, 20, 0, 0), datetime(2023, 4, 14, 7, 0, 0)))
