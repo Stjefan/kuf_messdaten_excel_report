@@ -2,7 +2,7 @@
 import os
 from datetime import date, datetime, timedelta
 from calendar import monthrange
-import locale
+# import locale
 import typing
 import xlsxwriter
 from uuid import UUID
@@ -22,7 +22,7 @@ from .monatsbericht import UebersichtImmissionsort, UebersichtMonat, erstelle_xs
 CS = os.getenv("CS_POSTGRES")
 
 
-locale.setlocale(locale.LC_TIME, 'de_DE')
+# locale.setlocale(locale.LC_TIME, 'de_DE')
 
 
 

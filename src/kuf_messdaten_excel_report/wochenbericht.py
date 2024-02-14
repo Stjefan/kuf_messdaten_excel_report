@@ -2,8 +2,7 @@
 import os
 from datetime import date, datetime, timedelta, time
 from calendar import monthrange
-import locale
-import typing
+
 import xlsxwriter
 import pandas as pd
 import numpy as np

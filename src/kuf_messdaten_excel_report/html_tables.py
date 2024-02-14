@@ -1,17 +1,11 @@
 from io import BytesIO, StringIO
 import os
-from calendar import monthrange
-from uuid import UUID
-import locale
 from datetime import datetime, date, timedelta
 from .utils import get_start_end_week
 import pandas as pd
 
-from .database_connection import ExcelReportDbService
-locale.setlocale(locale.LC_ALL, 'de')
 import pytz
-DATE_FORMAT = "%Y-%m-%d %H:%M:%S%Z"
-
+from settings import DATE_FORMAT
 est = pytz.timezone("Europe/Berlin")
 
 import numpy as np
@@ -19,7 +13,7 @@ destination = "./tables"
 
 def make_pretty(styler):
             
-            styler.format(lambda x: locale.format_string("%.1f", x))
+            styler.format(lambda x: f"{x:.1f}" if isinstance(x, (float, np.float64)) else x)
 
             styler.format_index(lambda v: v.strftime("%A, den %d.%m.%Y"))
             styler.set_table_styles(

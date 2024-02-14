@@ -48,7 +48,7 @@ import json
 import os
 import datetime as dt
 from calendar import monthrange
-import locale
+
 import typing
 import xlsxwriter
 
@@ -299,7 +299,7 @@ def create_content_worksheet_io_details(wb, worksheet, io_detail_daten: Uebersic
 def erstelle_sheet_schallleistungspegel(wb: xlsxwriter.Workbook, year: int, month: int, schallleistungspegel: typing.Dict[typing.Tuple[int, int], float]):
     my_sheetname = "Schallleistungspegel"
     worksheet = wb.add_worksheet(my_sheetname)
-    locale.setlocale(locale.LC_TIME, 'German') #locale.setlocale(locale.LC_TIME, 'de_DE.UTF-8')
+    # locale.setlocale(locale.LC_TIME, 'German') #locale.setlocale(locale.LC_TIME, 'de_DE.UTF-8')
 
     first_col = 1
     first_row = 2
@@ -454,7 +454,7 @@ def create_content_worksheet_uebersicht(wb, worksheet, uebersichtsdaten: Uebersi
 
         prozent_technische_ausfaelle = ((number_days_in_month*24*3600)-uebersichtsdaten.no_verwertbare_sekunden)/(number_days_in_month*24*3600)
         cell_formats_curr_worksheet = {}
-        locale.setlocale(locale.LC_TIME, 'German') #locale.setlocale(locale.LC_TIME, 'de_DE.UTF-8')
+        # locale.setlocale(locale.LC_TIME, 'German') #locale.setlocale(locale.LC_TIME, 'de_DE.UTF-8')
         ueberschrift = first_of_month.strftime("%B %Y")
         projektbezeichnung = uebersichtsdaten.name
         cells_cur_worksheet = {}

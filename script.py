@@ -1,5 +1,4 @@
 from io import BytesIO
-from src.kuf_messdaten_excel_report.v1 import DbService
 from src.kuf_messdaten_excel_report.wochenbericht import (
     erstelle_xslx_baulaerm_wochenbericht,
 )
@@ -24,7 +23,6 @@ from src.kuf_messdaten_excel_report.database_connection import (
 )
 
 import os, logging
-import locale
 from src.kuf_messdaten_excel_report.html_tables import create_html_table, fun_with_styling
 from src.kuf_messdaten_excel_report.png_charts import create_png_charts
 
